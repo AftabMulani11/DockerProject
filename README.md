@@ -1,35 +1,54 @@
-# Dockerized Flask Web App
+<div align="center">
 
-A **Flask** web application with user registration/login and a feedback system, containerized with **Docker**.
+# 🐳 Dockerized Flask Web App
 
-## Features
+**A containerized Flask app with secure auth — hashed passwords, session management, and a one-command Docker build.**
 
-- User registration & login with **hashed passwords** (Werkzeug)
-- Session management
-- Contact/feedback form persisted to **SQLite** via SQLAlchemy
-- Fully containerized — build once, run anywhere
+![Flask](https://img.shields.io/badge/Flask-0b0b0e?style=for-the-badge&logo=flask&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-0b0b0e?style=for-the-badge&logo=docker&logoColor=2496ED)
+![SQLite](https://img.shields.io/badge/SQLite-0b0b0e?style=for-the-badge&logo=sqlite&logoColor=003B57)
 
-## Tech stack
+</div>
 
-- **Python / Flask** — web framework
-- **Flask-SQLAlchemy** — ORM
-- **Docker** — containerization
+## What it does
+
+A multi-page Flask web app demonstrating containerized deployment and secure user management:
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/` | GET/POST | Login |
+| `/register` | GET/POST | New-user signup |
+| `/home` | GET | Authenticated landing |
+| `/profile` | GET | User profile |
+| `/contact` | GET/POST | Feedback / contact form |
+| `/logout` | GET | End session |
+
+## 🔐 Security
+
+- **Passwords are hashed** with Werkzeug (`generate_password_hash` / `check_password_hash`) — no plaintext credentials in the database
+- **`SECRET_KEY` from the environment** — never hardcoded; sessions fall back safely in dev
+- **Database is gitignored** — `instance/*.db` is out of version control, so no user data ships in the repo
 
 ## Run with Docker
 
 ```bash
 docker build -t flask-app .
-docker run -p 5000:5000 -e FLASK_SECRET_KEY=$(openssl rand -hex 24) flask-app
+docker run -e SECRET_KEY=$(openssl rand -hex 16) -p 5000:5000 flask-app
+# open http://localhost:5000
 ```
 
 ## Run locally
 
 ```bash
 pip install -r requirement.txt
-export FLASK_SECRET_KEY=your-secret-here
+export SECRET_KEY=$(openssl rand -hex 16)
 python app.py
 ```
 
-App runs at `http://localhost:5000`.
+## Tech stack
 
-> The secret key is read from the `FLASK_SECRET_KEY` environment variable — never hardcoded. The local SQLite database is gitignored.
+- **Flask** — routing, sessions, Jinja2 templates (`templates/`, `static/`)
+- **SQLite** — user + feedback storage via the `instance/` folder
+- **Docker** — single-stage image built from the [dockerfile](dockerfile)
+
+> Demonstrates the containerization and secure-Flask fundamentals behind my larger AWS projects ([GreenStay](https://github.com/AftabMulani11/greenstay), [CryptoFolio](https://github.com/AftabMulani11/cryptofolio)).
